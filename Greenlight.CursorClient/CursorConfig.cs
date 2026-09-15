@@ -26,6 +26,42 @@ public enum HaloStyle
     Both,
 }
 
+/// <summary>Where the halo sits relative to the tip of the cursor.</summary>
+/// <remarks>
+/// The arrow's hotspot is its tip, and the body of the arrow hangs down and a little to the
+/// right of it. A halo centred on the hotspot is therefore a halo centred on the one pixel the
+/// cursor is pointing at, which is usually the pixel somebody is trying to look at. Everything
+/// here except <see cref="UnderCursor"/> moves the halo off that point by
+/// <see cref="CursorConfig.PlacementDistance"/>.
+/// </remarks>
+public enum HaloPlacement
+{
+    /// <summary>
+    /// Down and a little to the right: tucked behind the body of the arrow, off whatever it is
+    /// pointing at. The default.
+    /// </summary>
+    BehindArrow,
+
+    /// <summary>Straight down from the tip.</summary>
+    Below,
+
+    /// <summary>Down and to the left, at a full diagonal.</summary>
+    BelowLeft,
+
+    /// <summary>Down and to the right, at a full diagonal — a longer reach than <see cref="BehindArrow"/>.</summary>
+    BelowRight,
+
+    /// <summary>Straight up from the tip.</summary>
+    Above,
+
+    Left,
+
+    Right,
+
+    /// <summary>Centred on the tip itself, with the cursor in the middle of the halo.</summary>
+    UnderCursor,
+}
+
 /// <summary>
 /// The halo, read from a JSON file the user can edit. Written out with the defaults the first
 /// time it is missing, so "where do I change the green" has an answer that does not involve
@@ -68,6 +104,21 @@ public sealed class CursorConfig
     /// <summary>A pool of light, a ring, or both.</summary>
     public HaloStyle Style { get; set; } = HaloStyle.Glow;
 
+    /// <summary>Where the halo sits relative to the tip of the cursor.</summary>
+    public HaloPlacement Placement { get; set; } = HaloPlacement.BehindArrow;
+
+    /// <summary>
+    /// How far off the tip the halo sits, in logical pixels — so the nudge keeps pace with the
+    /// cursor itself on a scaled display. Ignored by <see cref="HaloPlacement.UnderCursor"/>,
+    /// which has nowhere to move to.
+    /// </summary>
+    /// <remarks>
+    /// Sixteen, which on a cursor of the ordinary size puts the halo about where the middle of
+    /// the arrow is: far enough to leave the tip clear, close enough that it still reads as the
+    /// cursor's own halo rather than as a second thing following the cursor about.
+    /// </remarks>
+    public double PlacementDistance { get; set; } = 16;
+
     /// <summary>
     /// How far the halo reaches from the tip of the cursor, in logical pixels — so the same
     /// number is the same apparent size on a scaled display. This is the resting size; a build
@@ -99,6 +150,39 @@ public sealed class CursorConfig
     /// identical, and the difference is exactly the thing a status light exists to show.
     /// </remarks>
     public bool ShowWhenOff { get; set; } = true;
+
+    /// <summary>
+    /// How far to move the middle of the halo off the tip of the cursor, in logical pixels,
+    /// with y counting downwards as the screen does.
+    /// </summary>
+    /// <remarks>
+    /// The diagonals are unit vectors rather than <c>(distance, distance)</c>, so that picking a
+    /// corner changes which way the halo sits and not how far away it gets.
+    /// <see cref="HaloPlacement.BehindArrow"/> leans right by about a third rather than by a
+    /// half, which follows the slope of the arrow's own body instead of a true diagonal.
+    /// </remarks>
+    public (double X, double Y) Nudge()
+    {
+        var (x, y) = Placement switch
+        {
+            HaloPlacement.BehindArrow => Unit(0.35, 1),
+            HaloPlacement.Below => (0.0, 1.0),
+            HaloPlacement.BelowLeft => Unit(-1, 1),
+            HaloPlacement.BelowRight => Unit(1, 1),
+            HaloPlacement.Above => (0.0, -1.0),
+            HaloPlacement.Left => (-1.0, 0.0),
+            HaloPlacement.Right => (1.0, 0.0),
+            _ => (0.0, 0.0),
+        };
+
+        return (x * PlacementDistance, y * PlacementDistance);
+
+        static (double X, double Y) Unit(double x, double y)
+        {
+            var length = Math.Sqrt(x * x + y * y);
+            return (x / length, y / length);
+        }
+    }
 
     /// <summary>The colour for a given state. What the canvas asks, every frame.</summary>
     public string ColourFor(HaloState state) => state switch
@@ -149,6 +233,10 @@ public sealed class CursorConfig
             loaded.PulseSpeed = Math.Clamp(loaded.PulseSpeed, 0.1, 4.0);
             loaded.IdleFadeSeconds = Math.Clamp(loaded.IdleFadeSeconds, 0, 60 * 60);
 
+            // Far enough to put the halo wherever somebody wants it around the arrow, not so far
+            // that it stops being the cursor's halo and becomes a thing chasing the cursor about.
+            loaded.PlacementDistance = Math.Clamp(loaded.PlacementDistance, 0, 120);
+
             return loaded;
         }
         catch
@@ -183,6 +271,8 @@ public sealed class CursorConfig
         WhenAmber = other.WhenAmber;
         WhenRed = other.WhenRed;
         Style = other.Style;
+        Placement = other.Placement;
+        PlacementDistance = other.PlacementDistance;
         Size = other.Size;
         Opacity = other.Opacity;
         PulseSpeed = other.PulseSpeed;

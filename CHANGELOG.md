@@ -19,9 +19,13 @@ All notable changes to this project are documented here.
 - A window that follows the cursor rather than an overlay across the desktop, so a second monitor
   at a different scale does not put the halo a little off the arrow. Click-through, never
   activated, out of Alt+Tab, and repainted only when something would look different.
+- A placement. The halo sits behind the arrow by default — down and a little to the right,
+  following the slope of the arrow's own body — rather than centred on the tip, which is the one
+  pixel the cursor is there to point at. Below, either corner, the sides, above, and back under
+  the cursor are all on the menu, along with how far off the tip the nudge goes.
 - An idle fade, off by default: let the halo fade after the mouse has sat still for a while, and
   bring it straight back on the first movement.
-- A tray menu for everything - style, size, opacity, how fast it breathes, the idle fade, whether
+- A tray menu for everything - style, placement, size, opacity, how fast it breathes, the idle fade, whether
   Greenlight being away shows grey or nothing - each written straight back to `cursor.json`.
 - "Start with Windows" in the tray menu, registering the stable shim beside the install rather
   than the versioned copy an update would move.

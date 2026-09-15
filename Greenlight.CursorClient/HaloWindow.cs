@@ -150,7 +150,10 @@ public sealed class HaloWindow : Window
         }
     }
 
-    /// <summary>Put the middle of the window on the cursor, if it has moved.</summary>
+    /// <summary>
+    /// Put the middle of the window where the halo goes — on the cursor, or the configured
+    /// nudge away from it — if the cursor has moved.
+    /// </summary>
     private void Follow(bool force)
     {
         var cursor = CursorNative.Position();
@@ -161,12 +164,15 @@ public sealed class HaloWindow : Window
         if (cursor != _cursor) Scene.Moved();
         _cursor = cursor;
 
-        // Width is logical, Position is physical: the half-width has to be scaled up before
-        // it is taken off the cursor's physical coordinates, or the halo sits down and to the
-        // right of the arrow on every scaled display, which is most of them.
+        // Width and the nudge are both logical, Position is physical: both have to be scaled up
+        // before they meet the cursor's physical coordinates, or the halo sits a little off the
+        // arrow on every scaled display, which is most of them.
         var scaling = RenderScaling <= 0 ? 1 : RenderScaling;
         var half = (int)Math.Round(Width * scaling / 2);
+        var (nudgeX, nudgeY) = _config.Nudge();
 
-        Position = new PixelPoint(cursor.Value.X - half, cursor.Value.Y - half);
+        Position = new PixelPoint(
+            cursor.Value.X - half + (int)Math.Round(nudgeX * scaling),
+            cursor.Value.Y - half + (int)Math.Round(nudgeY * scaling));
     }
 }

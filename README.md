@@ -38,6 +38,11 @@ on the mascot in the notification area:
 
 - **Halo on the cursor** — take it away and bring it back. Clicking the icon does the same.
 - **What it looks like** — a soft glow, a crisp ring, or both.
+- **Where it sits** — which way the halo sits from the tip of the cursor. Behind the arrow by
+  default: down and a little to the right, tucked behind the arrow's own body and off whatever
+  it is pointing at. Below, either corner, the sides and above are all there too, and **Under
+  the cursor** puts it back in the middle with the arrow inside it.
+- **How far off the tip** — how far that nudge goes.
 - **How big**, **How solid** — the ordinary sizes, and how much the halo shows through.
 - **How fast it breathes** — the pace of the pulse while a build is running. The only setting
   here that means nothing at all about the build: the pace that reads as "working" to one person
@@ -68,6 +73,8 @@ alpha (`#804BFF86`) is somebody asking for a quieter green, and they get it:
   "WhenAmber": "#FFCE42",
   "WhenRed":   "#FF4E3C",
   "Style": "Glow",
+  "Placement": "BehindArrow",
+  "PlacementDistance": 16,
   "Size": 36,
   "Opacity": 0.85,
   "PulseSpeed": 1.0,
@@ -77,7 +84,10 @@ alpha (`#804BFF86`) is somebody asking for a quieter green, and they get it:
 ```
 
 `Size` is the halo's reach from the tip of the cursor, in logical pixels, so the same number is
-the same apparent size on a scaled display. A file that cannot be parsed falls back to the
+the same apparent size on a scaled display. `Placement` is one of `BehindArrow`, `Below`,
+`BelowLeft`, `BelowRight`, `Above`, `Left`, `Right` or `UnderCursor`, and `PlacementDistance`
+is how far that way the middle of the halo goes — also in logical pixels, and ignored by
+`UnderCursor`, which has nowhere to move to. A file that cannot be parsed falls back to the
 defaults rather than refusing to start: it is a desk toy, and a stray comma should not cost you
 the whole thing.
 

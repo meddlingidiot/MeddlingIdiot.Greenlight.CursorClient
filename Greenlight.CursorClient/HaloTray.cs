@@ -143,6 +143,20 @@ public sealed class HaloTray : IDisposable
             Style("A glow", HaloStyle.Glow),
             Style("A ring", HaloStyle.Ring),
             Style("Both", HaloStyle.Both)),
+        Submenu("Where it sits",
+            Place("Behind the arrow", HaloPlacement.BehindArrow),
+            Place("Below", HaloPlacement.Below),
+            Place("Below and left", HaloPlacement.BelowLeft),
+            Place("Below and right", HaloPlacement.BelowRight),
+            Place("Above", HaloPlacement.Above),
+            Place("Left", HaloPlacement.Left),
+            Place("Right", HaloPlacement.Right),
+            Place("Under the cursor", HaloPlacement.UnderCursor)),
+        Submenu("How far off the tip",
+            Distance("Touching", 8),
+            Distance("Ordinary", 16),
+            Distance("Further out", 28),
+            Distance("Well clear", 48)),
         Submenu("How big",
             Size("Small", 22),
             Size("Ordinary", 36),
@@ -187,6 +201,25 @@ public sealed class HaloTray : IDisposable
         Choice(header, () => _config.Style == style, () =>
         {
             _config.Style = style;
+            Persist();
+            OnConfigChanged?.Invoke();
+        });
+
+    private NativeMenuItem Place(string header, HaloPlacement placement) =>
+        Choice(header, () => _config.Placement == placement, () =>
+        {
+            _config.Placement = placement;
+            Persist();
+            OnConfigChanged?.Invoke();
+        });
+
+    // Left on the menu while the halo is under the cursor, where it does nothing: greying it out
+    // there would leave somebody who wanted it further off wondering which of the two settings
+    // had broken.
+    private NativeMenuItem Distance(string header, double distance) =>
+        Choice(header, () => Math.Abs(_config.PlacementDistance - distance) < 0.001, () =>
+        {
+            _config.PlacementDistance = distance;
             Persist();
             OnConfigChanged?.Invoke();
         });
