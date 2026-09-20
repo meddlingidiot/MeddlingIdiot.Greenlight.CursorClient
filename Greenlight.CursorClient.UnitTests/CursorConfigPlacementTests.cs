@@ -16,6 +16,10 @@ public class CursorConfigPlacementTests
 
         Assert.Equal(HaloPlacement.BehindArrow, config.Placement);
 
+        // And well clear of it: the furthest the tray offers, so the halo is off the arrow
+        // altogether rather than tucked under its body.
+        Assert.Equal(48, config.PlacementDistance);
+
         var (x, y) = config.Nudge();
 
         // Down, and to the right by rather less: tucked behind the body of the arrow rather than

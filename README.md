@@ -42,7 +42,8 @@ on the mascot in the notification area:
   default: down and a little to the right, tucked behind the arrow's own body and off whatever
   it is pointing at. Below, either corner, the sides and above are all there too, and **Under
   the cursor** puts it back in the middle with the arrow inside it.
-- **How far off the tip** — how far that nudge goes.
+- **How far off the tip** — how far that nudge goes. **Well clear** by default, the furthest of
+  the four, which puts the halo off the arrow altogether rather than behind its body.
 - **How big**, **How solid** — the ordinary sizes, and how much the halo shows through.
 - **How fast it breathes** — the pace of the pulse while a build is running. The only setting
   here that means nothing at all about the build: the pace that reads as "working" to one person
@@ -74,7 +75,7 @@ alpha (`#804BFF86`) is somebody asking for a quieter green, and they get it:
   "WhenRed":   "#FF4E3C",
   "Style": "Glow",
   "Placement": "BehindArrow",
-  "PlacementDistance": 16,
+  "PlacementDistance": 48,
   "Size": 36,
   "Opacity": 0.85,
   "PulseSpeed": 1.0,

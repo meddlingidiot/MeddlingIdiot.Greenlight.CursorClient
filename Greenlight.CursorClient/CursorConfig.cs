@@ -113,11 +113,12 @@ public sealed class CursorConfig
     /// which has nowhere to move to.
     /// </summary>
     /// <remarks>
-    /// Sixteen, which on a cursor of the ordinary size puts the halo about where the middle of
-    /// the arrow is: far enough to leave the tip clear, close enough that it still reads as the
-    /// cursor's own halo rather than as a second thing following the cursor about.
+    /// Forty-eight, the furthest the tray offers: far enough to clear the whole arrow rather
+    /// than sit behind its body, so the tip and whatever it is pointing at are left alone
+    /// entirely. The shorter distances are still on the menu for anyone who would rather it read
+    /// as the cursor's own halo than as a light keeping station beside it.
     /// </remarks>
-    public double PlacementDistance { get; set; } = 16;
+    public double PlacementDistance { get; set; } = 48;
 
     /// <summary>
     /// How far the halo reaches from the tip of the cursor, in logical pixels — so the same
